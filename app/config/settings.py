@@ -27,6 +27,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+INSTALLED_APPS += [
+    "tracker.apps.TrackerConfig",
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -61,13 +65,19 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.environ.get("DB_NAME"),
+#         "HOST": os.environ.get("DB_HOST"),
+#         "USER": os.environ.get("DB_USER"),
+#         "PORT": os.environ.get("DB_PORT"),
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("DB_NAME"),
-        "HOST": os.environ.get("DB_HOST"),
-        "USER": os.environ.get("DB_USER"),
-        "PORT": os.environ.get("DB_PORT"),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3"
     }
 }
 
@@ -97,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -111,7 +121,48 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = os.path.join(BASE_DIR, "static"),
-STATIC_ROOT = "/vol/web/static_root/"
+STATIC_ROOT = os.path.join(BASE_DIR, "static_root")
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = "/vol/web/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+LOGS = os.path.join(BASE_DIR, "logs")
+
+LOGGING = {
+  "version": 1,
+  "disable_existing_loggers": False,
+  "formatters": {
+        "format": {
+            "format": "",
+        },
+        "json": {
+                    '()': 'config.utils.CustomJSONFormat',
+                }
+    },
+  'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'format'
+        },
+        'to_json': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'json',
+            "filename": LOGS + "/api.json",
+        }
+  },
+  'loggers': {
+        'tracker': {
+            'handlers': ['to_json'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'django': {
+            'handlers': ['console'],
+            'propagate': True,
+        },
+
+    }
+}
+

@@ -16,23 +16,24 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
     depends_on:
-      - db
+#      - db
       - elasticsearch
       - logstash
       - kibana
     command: >
-      sh -c "python manage.py runserver 0.0.0.0:8000"
-  db:
-    restart: always
-    image: postgres:11.4-alpine
-    container_name: tracker_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    environment:
-      - POSTGRES_USER=s3-infosoft
-      - POSTGRES_DB=ota_tracker
+      sh -c "mkdir -p logs &&
+             python manage.py runserver 0.0.0.0:8000"
+#  db:
+#    restart: always
+#    image: postgres:11.4-alpine
+#    container_name: tracker_db
+#    ports:
+#      - "5433:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data/
+#    environment:
+#      - POSTGRES_USER=s3-infosoft
+#      - POSTGRES_DB=ota_tracker
   elasticsearch:
     restart: always
     container_name: elasticsearch
@@ -55,9 +56,12 @@ services:
     ports:
       - "5001:5000"
       - "9600:9600"
+    depends_on:
+      - elasticsearch
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./app/logs:/usr/share/logstash/logs:ro
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
@@ -69,6 +73,8 @@ services:
     image: kibana:7.2.0
     ports:
       - "5601:5601"
+    depends_on:
+      - elasticsearch
     volumes:
       - ./kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     networks:
@@ -79,5 +85,5 @@ networks:
   elk:
     driver: bridge
 
-volumes:
-  postgres_data:
+#volumes:
+#  postgres_data:

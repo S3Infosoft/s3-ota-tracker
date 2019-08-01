@@ -27,7 +27,7 @@ def get_data(request):
 
             for day in range(days):
                 start = check_in + timedelta(days=day)
-                end = check_out + timedelta(days=day+1)
+                end = check_in + timedelta(days=day+1)
 
                 price = generate_dummy_data(start, end)
 

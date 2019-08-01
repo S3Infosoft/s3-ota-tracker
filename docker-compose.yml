@@ -21,8 +21,7 @@ services:
       - logstash
       - kibana
     command: >
-      sh -c "mkdir -p logs &&
-             python manage.py runserver 0.0.0.0:8000"
+      sh -c "python manage.py runserver 0.0.0.0:8000"
 #  db:
 #    restart: always
 #    image: postgres:11.4-alpine
@@ -61,7 +60,7 @@ services:
     volumes:
       - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - ./app/logs:/usr/share/logstash/logs:ro
+      - ./app/logs:/usr/share/logstash/logs
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
